@@ -4,8 +4,10 @@ import type { GetServerSideProps } from 'next'
 interface IPageProps {
 	isBoot: boolean | null
 	id: string | null
+	idChecked: boolean | null
 	ip: string | null
 	name: string | null
+	nameChecked: boolean | null
 	version: string | null
 }
 
@@ -61,32 +63,54 @@ async function getNodeVersion(): Promise<string | null> {
 	return (await getData("info", "info.getNodeVersion"))?.result?.version ?? null;
 }
 
-// SSR
-export const getServerSideProps: GetServerSideProps<IPageProps> = async () => {
-	const r: IPageProps = {
-		isBoot: await getIsBoot(),
-		name: await getNetworkName(),
-		id: await getNodeId(),
-		ip: await getNodeIp(),
-		version: await getNodeVersion(),
-	};
-	return { props: r };
-};
+// helper overeni klicovych nastaveni
+function check(val: string,  checkWith: string | null):boolean | null{
+	if (checkWith == null)
+		return null;
+	else if (val == null)
+		return false;
+	else
+		return (val.toLowerCase() === checkWith.toLowerCase());
+}
 
-function formatDate(time: Date | null):string {
-
-	if (!time)
-		return "";
+// helper: formatovani datum-casu
+function formatDate(time: Date | null): string {
+	if (!time) return "";
 
 	return time.getDay() + "." + time.getMonth() + "." + time.getFullYear() + " "
 		+ time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds();
 }
 
+// helper: formatovani boolean
+function formatBool(val: boolean | null): string {
+	if (val == null) return "NA";
+	return (val == true) ? "A" : "N";
+}
+
+// SSR
+export const getServerSideProps: GetServerSideProps<IPageProps> = async () => {
+	const r: IPageProps = {
+		isBoot: await getIsBoot(),
+		name: await getNetworkName(),
+		nameChecked: null,
+		id: await getNodeId(),
+		idChecked: null,
+		ip: await getNodeIp(),
+		version: await getNodeVersion(),
+	};
+
+	// kontrola spravnosti nastaveni
+	r.idChecked = check(r.id, process.env.NODE_ID);
+	r.nameChecked = check(r.name, process.env.NODE_NAME);
+
+	return { props: r };
+};
+
 // page
 export default function Page(props: IPageProps) {
 	const [when, setWhen] = useState(new Date());
 
-	async function handleClick(e) {
+	async function handleUpdate(e) {
 		e.preventDefault();
 		console.log('The link was clicked.');
 		setWhen(new Date());
@@ -94,13 +118,13 @@ export default function Page(props: IPageProps) {
 
 	return (
 		<p>
-			Is boot: {props.isBoot ? "A" : "N"}<br/>
-			Name: {props.name}<br/>
-			ID: {props.id}<br/>
+			Is boot: {formatBool(props.isBoot)}<br/>
+			Name: {props.name} ({formatBool(props.nameChecked)})<br/>
+			ID: {props.id} ({formatBool(props.idChecked)})<br/>
 			IP: {props.ip}<br/>
 			Version: {props.version}<br/>
 
-			<button onClick={handleClick}>Update</button><br/>
+			<button onClick={handleUpdate}>Update</button><br/>
 			Generated: <span>{formatDate(when)}</span>
 		</p>
 	)

@@ -1,0 +1,20 @@
+version: '3.9'
+services:
+  avalanche:
+    image: "avaplatform/avalanchego:latest"
+    container_name: avax-dev
+    command: [
+      "/avalanchego/build/avalanchego",
+      "--http-host=0.0.0.0",
+      "--network-id=testnet"
+    ]
+    ports:
+      - "9650:9650"
+    volumes:
+      - /Users/martin/Projects/avalanche-my/storage/db/:/root/.avalanchego/db/
+      - /Users/martin/Projects/avalanche-my/storage/staking/:/root/.avalanchego/staking/
+      - /Users/martin/Projects/avalanche-my/storage/configs/:/root/.avalanchego/configs/
+      - /Users/martin/Projects/avalanche-my/storage/pruning/:/root/.avalanchego/pruning/
+    restart: unless-stopped
+    mem_limit: 16g
+    cpu_percent: 50

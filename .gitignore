@@ -1,0 +1,21 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/storage
+
+# testing
+/coverage
+
+# next.js
+.next/
+.run/
+
+# misc
+.DS_Store
+
+# yarn
+yarn.lock
+
+# Idea
+.idea

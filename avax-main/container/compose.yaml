@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  avalanche:
+    image: "avaplatform/avalanchego:latest"
+    container_name: avax-main
+    command: [
+      "/avalanchego/build/avalanchego",
+      "--http-host=0.0.0.0",
+      "--network-id=mainnet"
+    ]
+    ports:
+      - "9650:9650"
+    volumes:
+      - /volume1/docker/avax-main/db/:/root/.avalanchego/db/
+      - /volume1/docker/avax-main/staking/:/root/.avalanchego/staking/
+      - /volume1/docker/avax-main/configs/:/root/.avalanchego/configs/
+      - /volume1/docker/avax-main/pruning/:/root/.avalanchego/pruning/
+    restart: always
+    mem_limit: 16g
+    cpu_percent: 50

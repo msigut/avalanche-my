@@ -1,0 +1,4 @@
+{
+	"offline-pruning-enabled": true,
+	"offline-pruning-data-directory": "/root/.avalanchego/pruning/"
+}

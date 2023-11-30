@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import type { GetServerSideProps } from 'next'
+import fs from 'fs'
+import path from 'path'
 
 interface IPageProps {
 	isBoot: boolean | null
@@ -63,7 +65,7 @@ async function getNodeVersion(): Promise<string | null> {
 	return (await getData("info", "info.getNodeVersion"))?.result?.version ?? null;
 }
 
-// helper overeni klicovych nastaveni
+// helper: overeni klicovych nastaveni
 function check(val: string,  checkWith: string | null):boolean | null{
 	if (checkWith == null)
 		return null;
@@ -71,6 +73,15 @@ function check(val: string,  checkWith: string | null):boolean | null{
 		return false;
 	else
 		return (val.toLowerCase() === checkWith.toLowerCase());
+}
+
+// helper: seznam obrazku pro images
+// https://medium.com/@boris.poehland.business/next-js-api-routes-how-to-read-files-from-directory-compatible-with-vercel-5fb5837694b9
+function banners(dirRelativeToPublicFolder: string = "images"): string[] {
+	const dir = path.resolve("./public", dirRelativeToPublicFolder);
+
+	const filenames = fs.readdirSync(dir);
+	return filenames.map(name => path.join('/', dirRelativeToPublicFolder, name))
 }
 
 // helper: formatovani datum-casu
@@ -98,6 +109,10 @@ export const getServerSideProps: GetServerSideProps<IPageProps> = async () => {
 		ip: await getNodeIp(),
 		version: await getNodeVersion(),
 	};
+
+	// cteni Banners + nahodny z nich
+	const bs = banners();
+	const b = bs[Math.floor(Math.random() * bs.length)];
 
 	// kontrola spravnosti nastaveni
 	r.idChecked = check(r.id, process.env.NODE_ID);

@@ -4,13 +4,19 @@ import fs from 'fs'
 import path from 'path'
 
 interface IPageProps {
-	isBoot: boolean | null
+	isBoot: boolean
 	id: string | null
 	idChecked: boolean | null
 	ip: string | null
 	name: string | null
 	nameChecked: boolean | null
 	version: string | null
+	percRewarnig: number | null
+	percAverage: number | null
+	startTime: string | null
+	endTime: string | null
+	connected: boolean | null
+	fee: number | null
 }
 
 // get data from AVAX Node
@@ -64,6 +70,25 @@ async function getNodeIp(): Promise<string | null> {
 async function getNodeVersion(): Promise<string | null> {
 	return (await getData("info", "info.getNodeVersion"))?.result?.version ?? null;
 }
+async function getUp(props: IPageProps) {
+	const up = (await getData("info", "info.uptime"))?.result ?? null;
+	if (!up) return;
+
+	props.percRewarnig = up.rewardingStakePercentage ?? null;
+	props.percAverage = up.weightedAveragePercentage ?? null;
+}
+async function getValidator(props: IPageProps) {
+	const nodeId = process.env.NODE_ID ?? props.id;
+	if (!nodeId) return;
+
+	const validator = (await getData("bc/P", "platform.getCurrentValidators", {"nodeIDs": [nodeId]}))?.result?.validators[0] ?? null;
+	if (!validator) return;
+
+	props.startTime = formatDate(parseDate(validator.startTime));
+	props.endTime = formatDate(parseDate(validator.endTime));
+	props.connected = validator.connected ?? null;
+	props.fee = validator.delegationFee ?? null;
+}
 
 // helper: overeni klicovych nastaveni
 function check(val: string,  checkWith: string | null):boolean | null{
@@ -84,11 +109,18 @@ function banners(dirRelativeToPublicFolder: string = "images"): string[] {
 	return filenames.map(name => path.join('/', dirRelativeToPublicFolder, name))
 }
 
+// helper: parsovani Date z UNIX int casu
+function parseDate(val: string | null) : Date | null {
+	if (val == null)
+		return null;
+
+	return new Date(Number(val) * 1000);
+}
 // helper: formatovani datum-casu
 function formatDate(time: Date | null): string {
 	if (!time) return "";
 
-	return time.getDay() + "." + time.getMonth() + "." + time.getFullYear() + " "
+	return time.getDate() + "." + (time.getMonth() + 1) + "." + time.getFullYear() + " "
 		+ time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds();
 }
 
@@ -109,6 +141,10 @@ export const getServerSideProps: GetServerSideProps<IPageProps> = async () => {
 		ip: await getNodeIp(),
 		version: await getNodeVersion(),
 	};
+
+	// statistiky Up + informace o validatorovi
+	await getUp(r);
+	await getValidator(r);
 
 	// cteni Banners + nahodny z nich
 	const bs = banners();
@@ -138,6 +174,14 @@ export default function Page(props: IPageProps) {
 			ID: {props.id} ({formatBool(props.idChecked)})<br/>
 			IP: {props.ip}<br/>
 			Version: {props.version}<br/>
+
+			Rewarding: {props.percRewarnig}<br/>
+			Average: {props.percAverage}<br/>
+
+			Start: {props.startTime}<br/>
+			End: {props.endTime}<br/>
+			Connected: {formatBool(props.connected)}<br/>
+			Fee: {props.fee}<br/>
 
 			<button onClick={handleUpdate}>Update</button><br/>
 			Generated: <span>{formatDate(when)}</span>

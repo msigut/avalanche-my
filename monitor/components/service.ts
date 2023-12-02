@@ -101,7 +101,8 @@ export default async function getDataAll() : Promise<INodeProps> {
         startTime: null,
         endTime: null,
         connected: null,
-        fee: null
+        fee: null,
+        banners: null
     };
 
     // statistiky Up + informace o validatorovi

@@ -1,8 +1,8 @@
 import React from "react";
-import {ActionIcon, Badge, Button, Card, Container, CopyButton, Divider, Group, Image, rem, Text, ThemeIcon, Title, Tooltip, useMantineColorScheme} from "@mantine/core";
+import {ActionIcon, Badge, Card, Container, CopyButton, Divider, Group, Image, rem, Text, ThemeIcon, Title, Tooltip, useMantineColorScheme} from "@mantine/core";
 import {IconAlertCircle, IconCheck, IconCircleCheck, IconCopy} from "@tabler/icons-react";
-import {getRandom} from "./lib/helpers";
-import getDataAll, {INodeProps } from "./lib/service";
+import {getRandom} from "../components/helpers";
+import getDataAll, {INodeProps } from "../components/service";
 import fs from 'fs'
 import path from 'path'
 
@@ -35,11 +35,9 @@ export default function MainPage(props: INodeProps) {
 				<Group justify="space-between" mt="xs" mb="xs">
 					<Group>
 						<CheckIcon check={data.nameChecked}  />
-						<Title order={1} size="h4" >
-							{data.name.toUpperCase()}
-						</Title>
+						<Title order={1} size="h4">{data.name?.toUpperCase()}</Title>
 					</Group>
-					<Badge color={data.isBoot ? "green" : "red"} variant="light">{data.isBoot ? "Booted" : "Bootstraping"}</Badge>
+					<Badge color={data.isBoot ? "green" : "red"} variant="light">{data.isBoot ? "Booted" : "Bootstrapping"}</Badge>
 				</Group>
 
 				<Divider variant="dotted" />

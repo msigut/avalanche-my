@@ -5,18 +5,13 @@ export function parseDate(val: string | null) : Date | null {
 
     return new Date(Number(val) * 1000);
 }
+
 // helper: formatovani datum-casu
 export function formatDate(time: Date | null): string {
     if (!time) return "";
 
     return time.getDate() + "." + (time.getMonth() + 1) + "." + time.getFullYear() + " "
         + time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds();
-}
-
-// helper: formatovani boolean
-export function formatBool(val: boolean | null): string {
-    if (val == null) return "NA";
-    return (val == true) ? "A" : "N";
 }
 
 // helper: overeni klicovych nastaveni

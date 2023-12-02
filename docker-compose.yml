@@ -3,9 +3,9 @@ services:
   app:
     image: monitor-app
     build:
-      context: ./
-      target: runner
+      context: ./monitor
       dockerfile: Dockerfile
+      target: runner
     volumes:
       - /app/public
     ports:

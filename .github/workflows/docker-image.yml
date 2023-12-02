@@ -15,6 +15,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build Monitor the Docker image
-      run: docker build . --file Dockerfile --tag my-monitor:$(date +%s)
-      with:
-        context: monitor
+      run: docker build ./monitor --file Dockerfile --tag my-monitor:$(date +%s)

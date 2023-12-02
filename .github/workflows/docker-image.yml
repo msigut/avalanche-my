@@ -13,8 +13,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3 
-      with:
-        context: monitor
+    - uses: actions/checkout@v3
     - name: Build Monitor the Docker image
       run: docker build . --file Dockerfile --tag my-monitor:$(date +%s)
+      with:
+        context: monitor

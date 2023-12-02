@@ -1,4 +1,4 @@
-import {doCheck, formatDate, getPublicFiles, parseDate} from "./helpers";
+import {doCheck, formatDate, parseDate} from "./helpers";
 
 export interface INodeProps {
     isBoot: boolean

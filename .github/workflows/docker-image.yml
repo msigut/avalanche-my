@@ -14,6 +14,21 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Discover latest tag
+        id: discover_latest_tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          LATEST_TAG=$(gh api "/repos/$GITHUB_REPOSITORY/tags" --jq '.[].name' | grep -P '^v\d+\.\d+\.\d+$' | sort -Vr | head -n 1)
+          echo "Detected latest tag: ${LATEST_TAG}"
+          echo "Detected ref name: ${GITHUB_REF_NAME}"
+          echo "LATEST_TAG=${LATEST_TAG}" >> "$GITHUB_OUTPUT"
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5

@@ -2,14 +2,11 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 defaults:
   run:
     working-directory: ./monitor # here I setup working directory for flow
-    
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,5 +16,5 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./Dockerfile
+          context: ./monitor
+          file: ./monitor/Dockerfile

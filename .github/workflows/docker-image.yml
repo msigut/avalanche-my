@@ -2,6 +2,7 @@ name: Docker Image CI
 
 on:
   push:
+    tags: [ "v[0-9]+.[0-9]+.[0-9]+", "v[0-9]+.[0-9]+.[0-9]+-*" ]
 
 defaults:
   run:
@@ -13,9 +14,23 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+          flavor: |
+            latest=${{ steps.discover_latest_tag.outputs.LATEST_TAG == github.ref_name }}
+          images: |
+            ${{ env.REGISTRY }}/${{ github.repository }}/monitor-app-${{ matrix.target }}
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: ./monitor
           file: ./monitor/Dockerfile
           push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

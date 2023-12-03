@@ -18,3 +18,4 @@ jobs:
         with:
           context: ./monitor
           file: ./monitor/Dockerfile
+          push: true
